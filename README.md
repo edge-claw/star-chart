@@ -14,7 +14,7 @@
 
 ## 数据源
 
-读取 `~/.tcm-bar-cache.json`，由 [tcm-bar](https://github.com/shaoguos/tcm-bar) 的 `fetch_tcm.sh` 定时生成。
+读取 `~/.tcm-bar-cache.json`，由 [tcm-widget](https://github.com/shaoguos/tcm-widget) 的 `fetch_tcm.sh` 定时生成。
 
 JSON 中使用的字段：
 - `mansion` — 当日值宿（index / name / group / star）
