@@ -1,5 +1,5 @@
 /**
- * 岐黄星图 — Übersicht Widget 主入口
+ * 璇玑星图 — Übersicht Widget 主入口
  *
  * 展示北斗七星斗柄指向 + 二十八宿值日星宿 + 节气/地支环
  * 数据源：本地 latest.json（由 generate_daily_data.py 生成）
@@ -140,7 +140,8 @@ function getDipperData(latestData) {
 function arcAngle(i, total) { return (i * Math.PI * 2) / total; }
 function posAngle(i, total) { return (i * Math.PI * 2) / total - Math.PI / 2; }
 
-function renderStarMapSVG(data, size) {
+function renderStarMapSVG(data, size, height) {
+  const h = height || size;
   const cx = size / 2;
   const cy = size / 2;
   const mansionData = data?.mansion || {};
@@ -293,9 +294,9 @@ function renderStarMapSVG(data, size) {
   const lunarStr = data?.date?.lunar || '';
   const mansionName = MANSIONS[currentMansionIdx]?.name || '';
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${h}" viewBox="0 0 ${size} ${h}">
   <defs>
-    <radialGradient id="bg-gradient" cx="50%" cy="50%" r="50%">
+    <radialGradient id="bg-gradient" cx="50%" cy="${Math.round(cy/h*100)}%" r="55%">
       <stop offset="0%" stop-color="#0e1428"/>
       <stop offset="50%" stop-color="#0a1020"/>
       <stop offset="100%" stop-color="#060a16"/>
@@ -314,9 +315,9 @@ function renderStarMapSVG(data, size) {
     </filter>
   </defs>
 
-  <rect width="${size}" height="${size}" rx="12" fill="url(#bg-gradient)"/>
+  <rect width="${size}" height="${h}" rx="12" fill="url(#bg-gradient)"/>
   <!-- 边框 -->
-  <rect width="${size}" height="${size}" rx="12" fill="none" stroke="#1a2a50" stroke-width="1" opacity="0.5"/>
+  <rect width="${size}" height="${h}" rx="12" fill="none" stroke="#1a2a50" stroke-width="1" opacity="0.5"/>
 
   <!-- 星场 -->
   ${bgStars}
@@ -339,15 +340,16 @@ function renderStarMapSVG(data, size) {
   </g>
 
   <!-- 左下角：日期 -->
-  <text x="14" y="${size - 46}" fill="#8899aa" font-size="11px" ${FF}>${dateStr}</text>
-  <text x="14" y="${size - 31}" fill="#778899" font-size="10px" ${FF}>${lunarStr}</text>
+  <text x="14" y="${h - 56}" fill="#8899aa" font-size="11px" ${FF}>${dateStr}</text>
+  <text x="14" y="${h - 42}" fill="#778899" font-size="10px" ${FF}>${lunarStr}</text>
 
   <!-- 右下角：值日星宿 -->
-  <text x="${size - 14}" y="${size - 46}" fill="${mColor}" font-size="13px" font-weight="bold" text-anchor="end" filter="url(#glow)" ${FF}>${mansionName}</text>
-  <text x="${size - 14}" y="${size - 31}" fill="#8899aa" font-size="10px" text-anchor="end" ${FF}>${GROUP_SHORT[MANSIONS[currentMansionIdx]?.group] || ''} · ${mansionData.star || ''}</text>
+  <text x="${size - 14}" y="${h - 56}" fill="${mColor}" font-size="13px" font-weight="bold" text-anchor="end" filter="url(#glow)" ${FF}>${mansionName}</text>
+  <text x="${size - 14}" y="${h - 42}" fill="#8899aa" font-size="10px" text-anchor="end" ${FF}>${GROUP_SHORT[MANSIONS[currentMansionIdx]?.group] || ''} · ${mansionData.star || ''}</text>
 
   <!-- 底部中央：斗柄诗句 -->
-  <text x="${cx}" y="${size - 10}" fill="${seasonColor}" font-size="11px" text-anchor="middle" filter="url(#text-glow)" ${FF}>${dipperData.directionText || ''}</text>
+  <line x1="40" y1="${h - 26}" x2="${size - 40}" y2="${h - 26}" stroke="#1a2a50" stroke-width="0.5" opacity="0.5"/>
+  <text x="${cx}" y="${h - 10}" fill="${seasonColor}" font-size="11px" text-anchor="middle" filter="url(#text-glow)" ${FF}>${dipperData.directionText || ''}</text>
 </svg>`;
 }
 
@@ -357,7 +359,7 @@ export const className = `
   top: 40px;
   left: 430px;
   width: 400px;
-  height: 400px;
+  height: 430px;
   z-index: 1;
   -webkit-font-smoothing: antialiased;
   font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -379,7 +381,7 @@ export const render = ({ output, error }) => {
     </div>;
   }
 
-  const svgString = renderStarMapSVG(data, 400);
+  const svgString = renderStarMapSVG(data, 400, 430);
 
   return <div dangerouslySetInnerHTML={{ __html: svgString }} />;
 };
