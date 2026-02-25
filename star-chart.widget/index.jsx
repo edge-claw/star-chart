@@ -340,7 +340,6 @@ function renderStarMapSVG(data, size, height) {
   <rect width="${size}" height="${h}" rx="12" fill="none" stroke="#1a2a50" stroke-width="1" opacity="0.5"/>
 
   <!-- 标题 -->
-  <text x="${cx}" y="20" fill="#8899bb" font-size="12px" text-anchor="middle" letter-spacing="3px" opacity="0.7" ${FF}>璇 玑 星 图</text>
 
   <!-- 星场 -->
   ${bgStars}
@@ -362,7 +361,8 @@ function renderStarMapSVG(data, size, height) {
     </g>
   </g>
 
-  <!-- 左下角：日期 -->
+  <!-- 左下角：标题 + 日期 -->
+  <text x="14" y="${h - 68}" fill="#8899bb" font-size="13px" font-weight="600" letter-spacing="1px" ${FF}>璇玑星图</text>
   <text x="14" y="${h - 56}" fill="#8899aa" font-size="11px" ${FF}>${dateStr}</text>
   <text x="14" y="${h - 42}" fill="#778899" font-size="10px" ${FF}>${lunarStr}</text>
 
