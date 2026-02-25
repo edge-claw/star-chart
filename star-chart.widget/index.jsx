@@ -13,7 +13,7 @@
 
 // ── Widget 配置 ──
 // 读取 latest.json 路径（Mac 部署时调整路径）
-export const command = `cat /Users/chaishaoguo/.tcm-bar-cache.json 2>/dev/null || echo '{}'`;
+export const command = `cat $HOME/.tcm-bar-cache.json 2>/dev/null || echo '{}'`;
 
 // 每 5 分钟刷新
 export const refreshFrequency = 60000; // 1分钟刷新，配合北斗实时旋转
