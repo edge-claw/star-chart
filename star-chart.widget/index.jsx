@@ -16,7 +16,7 @@
 export const command = `cat /Users/chaishaoguo/.tcm-bar-cache.json 2>/dev/null || echo '{}'`;
 
 // 每 5 分钟刷新
-export const refreshFrequency = 300000;
+export const refreshFrequency = 60000; // 1分钟刷新，配合北斗实时旋转
 
 // ── 内联所有依赖（Übersicht 不支持 ES module import）──
 
@@ -159,14 +159,24 @@ function renderStarMapSVG(data, size, height) {
   const stars = projectDipperStars(65);
 
   // ── 计算斗柄旋转角度 ──
-  // handleAngle 是罗盘方位角（0°=北/上，顺时针）
+  // handleAngle 是初昏（约19:00）时的罗盘方位角（0°=北，顺时针）
+  // 地球自转使北斗每小时顺时针旋转约15°（恒星时 360°/23.9344h ≈ 15.04°/h）
+  // 实时角度 = 初昏角度 + (当前时刻 - 初昏) × 15°/h
+  const DUSK_HOUR = 19; // 初昏基准时刻
+  const SIDEREAL_RATE = 15.04; // °/小时（恒星时角速度）
+  const now = new Date();
+  const currentHour = now.getHours() + now.getMinutes() / 60;
+  const hoursSinceDusk = currentHour - DUSK_HOUR;
+  const realtimeAngle = (handleAngle + hoursSinceDusk * SIDEREAL_RATE + 720) % 360;
+
+  // SVG 坐标系转换：
   // SVG rotate() 从3点钟方向（右/东）顺时针旋转
   // 地支环坐标系：子=北=上，卯=东=右（标准罗盘布局）
   // 罗盘方位 θ 对应 SVG 角度 (θ - 90°)
   // 需修正初始斗柄朝向（由 RA/Dec 投影决定）
   const tipStar = stars[6]; // 摇光（斗柄末端）
   const initialHandleSVGAngle = Math.atan2(tipStar.y, tipStar.x) * 180 / Math.PI;
-  const dipperRotation = (handleAngle - 90 - initialHandleSVGAngle + 720) % 360;
+  const dipperRotation = (realtimeAngle - 90 - initialHandleSVGAngle + 720) % 360;
 
   // ── 北斗连线（加粗提亮）──
   const bowlLinesStr = BOWL_LINES.map(([a, b]) =>
